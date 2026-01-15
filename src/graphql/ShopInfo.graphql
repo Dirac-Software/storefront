@@ -1,0 +1,18 @@
+query ShopInfo {
+	shop {
+		name
+		description
+		companyAddress {
+			companyName
+			streetAddress1
+			streetAddress2
+			city
+			postalCode
+			country {
+				code
+				country
+			}
+			phone
+		}
+	}
+}

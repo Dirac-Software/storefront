@@ -9,9 +9,17 @@ fragment ProductListItem on Product {
 					amount
 					currency
 				}
+				net {
+					amount
+					currency
+				}
 			}
 			stop {
 				gross {
+					amount
+					currency
+				}
+				net {
 					amount
 					currency
 				}
@@ -21,6 +29,14 @@ fragment ProductListItem on Product {
 	category {
 		id
 		name
+	}
+	attributes {
+		attribute {
+			slug
+		}
+		values {
+			name
+		}
 	}
 	thumbnail(size: 1024, format: WEBP) {
 		url

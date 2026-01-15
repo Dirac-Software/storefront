@@ -10,12 +10,16 @@ export const CartNavItem = async ({ channel }: { channel: string }) => {
 	const lineCount = checkout ? checkout.lines.reduce((result, line) => result + line.quantity, 0) : 0;
 
 	return (
-		<LinkWithChannel href="/cart" className="relative flex items-center" data-testid="CartNavItem">
+		<LinkWithChannel
+			href="/cart"
+			className="relative flex items-center text-dark-text-primary"
+			data-testid="CartNavItem"
+		>
 			<ShoppingBagIcon className="h-6 w-6 shrink-0" aria-hidden="true" />
 			{lineCount > 0 ? (
 				<div
 					className={clsx(
-						"absolute bottom-0 right-0 -mb-2 -mr-2 flex h-4 flex-col items-center justify-center rounded bg-neutral-900 text-xs font-medium text-white",
+						"absolute bottom-0 right-0 -mb-2 -mr-2 flex h-4 flex-col items-center justify-center rounded bg-blue-600 text-xs font-medium text-white",
 						lineCount > 9 ? "w-[3ch]" : "w-[2ch]",
 					)}
 				>

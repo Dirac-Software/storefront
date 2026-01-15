@@ -24,10 +24,15 @@ export const usePayments = () => {
 			return;
 		}
 
+		// Don't attempt to complete if billing address is not set
+		if (!checkout.billingAddress) {
+			return;
+		}
+
 		if (!completingCheckout && paidStatuses.includes(paymentStatus)) {
 			void onCheckoutComplete();
 		}
-	}, [completingCheckout, onCheckoutComplete, paymentStatus]);
+	}, [completingCheckout, onCheckoutComplete, paymentStatus, checkout.billingAddress]);
 
 	return { fetching, availablePaymentGateways };
 };

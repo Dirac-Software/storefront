@@ -37,9 +37,9 @@ export function VariantSelector({
 								}
 								className={clsx(
 									isCurrentVariant
-										? "border-transparent bg-neutral-900 text-white hover:bg-neutral-800"
-										: "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-100",
-									"relative flex min-w-[5ch] items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded border p-3 text-center text-sm font-semibold focus-within:outline focus-within:outline-2 aria-disabled:cursor-not-allowed aria-disabled:bg-neutral-100 aria-disabled:text-neutral-800 aria-disabled:opacity-50",
+										? "border-blue-400 bg-blue-500 text-white hover:bg-blue-600"
+										: "border-dark-border bg-dark-card text-dark-text-primary hover:bg-dark-card-hover",
+									"relative flex min-w-[5ch] items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded border p-3 text-center text-sm font-semibold transition-colors focus-within:outline focus-within:outline-2 aria-disabled:cursor-not-allowed aria-disabled:bg-dark-card aria-disabled:text-dark-text-muted aria-disabled:opacity-50",
 									isDisabled && "pointer-events-none",
 								)}
 								role="radio"

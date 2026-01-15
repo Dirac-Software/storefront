@@ -70,7 +70,7 @@ export const Summary: FC<SummaryProps> = ({
 				</>
 			)}
 			<div className="mt-4 flex max-w-full flex-col">
-				<SummaryMoneyRow label="Subtotal" money={subtotalPrice?.gross} ariaLabel="subtotal price" />
+				<SummaryMoneyRow label="Subtotal" money={subtotalPrice?.net} ariaLabel="subtotal price" />
 				{voucherCode && (
 					<SummaryPromoCodeRow
 						editable={editable}
@@ -92,7 +92,7 @@ export const Summary: FC<SummaryProps> = ({
 						negative
 					/>
 				))}
-				<SummaryMoneyRow label="Shipping cost" ariaLabel="shipping cost" money={shippingPrice?.gross} />
+				<SummaryMoneyRow label="Shipping cost" ariaLabel="shipping cost" money={shippingPrice?.net} />
 				<Divider className="my-4" />
 				<div className="flex flex-row items-baseline justify-between pb-4">
 					<div className="flex flex-row items-baseline">

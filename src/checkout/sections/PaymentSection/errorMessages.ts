@@ -31,4 +31,6 @@ export const apiErrorMessages = {
 	checkoutBillingUpdatePostalCodeInvalidError: "Invalid postal code was provided for billing address",
 	checkoutDeliveryMethodUpdatePostalCodeInvalidError: "Invalid postal code was provided for shipping address",
 	checkoutDeliveryMethodUpdatePromoCodeInvalidError: "Please provide a valid discount code.",
+	checkoutCompleteBillingAddressBillingAddressNotSetError:
+		"Billing address is required to complete the order. Please provide your billing address.",
 };

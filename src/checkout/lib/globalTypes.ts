@@ -9,8 +9,8 @@ export interface Children {
 	children: ReactNode | ReactNode[];
 }
 
-export type GrossMoney = Pick<TaxedMoney, "gross">;
-export type GrossMoneyWithTax = Pick<TaxedMoney, "gross" | "tax">;
+export type GrossMoney = Pick<TaxedMoney, "gross" | "net">;
+export type GrossMoneyWithTax = Pick<TaxedMoney, "gross" | "net" | "tax">;
 
 export interface AriaLabel {
 	ariaLabel: string;

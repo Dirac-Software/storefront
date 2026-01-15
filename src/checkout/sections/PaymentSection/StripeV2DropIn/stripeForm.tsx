@@ -9,6 +9,7 @@ import { useAlerts } from "@/checkout/hooks/useAlerts";
 import { useEvent } from "@/checkout/hooks/useEvent";
 import { useTransactionInitializeMutation, useTransactionProcessMutation } from "@/checkout/graphql";
 import { useCheckoutComplete } from "@/checkout/hooks/useCheckoutComplete";
+import { useCheckoutUpdateState } from "@/checkout/state/updateStateStore";
 
 const paymentElementOptions: StripePaymentElementOptions = {
 	layout: "tabs",
@@ -26,6 +27,7 @@ export function CheckoutForm() {
 	const { onCheckoutComplete } = useCheckoutComplete();
 	const [, transactionInitialize] = useTransactionInitializeMutation();
 	const [, transactionProcess] = useTransactionProcessMutation();
+	const { updateState } = useCheckoutUpdateState();
 
 	// When page is opened from previously redirected payment, we need to complete the checkout
 	useCheckoutCompleteRedirect();
@@ -35,6 +37,27 @@ export function CheckoutForm() {
 
 		if (!stripe || !elements) {
 			showCustomErrors([{ message: "Payment system is not available. Please try again later." }]);
+			return;
+		}
+
+		if (!checkout.email) {
+			showCustomErrors([
+				{ message: "Email is required to complete the order. Please provide your email address." },
+			]);
+			return;
+		}
+
+		// Check if billing address update is still in progress
+		if (updateState.checkoutBillingUpdate === "loading") {
+			showCustomErrors([
+				{ message: "Please wait for billing address to be saved before completing payment." },
+			]);
+			return;
+		}
+
+		// Billing address must be set in checkout before payment
+		if (!checkout.billingAddress) {
+			showCustomErrors([{ message: "Please wait for billing address to be saved, then try again." }]);
 			return;
 		}
 
@@ -171,7 +194,20 @@ export function CheckoutForm() {
 			<PaymentElement className="payment-element" options={paymentElementOptions} />
 			<button
 				className="h-12 items-center rounded-md bg-neutral-900 px-6 py-3 text-base font-medium leading-6 text-white shadow hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-70 hover:disabled:bg-neutral-700 aria-disabled:cursor-not-allowed aria-disabled:opacity-70 hover:aria-disabled:bg-neutral-700"
-				aria-disabled={isLoading || !stripe || !elements}
+				aria-disabled={
+					isLoading ||
+					!stripe ||
+					!elements ||
+					updateState.checkoutBillingUpdate === "loading" ||
+					!checkout.billingAddress
+				}
+				disabled={
+					isLoading ||
+					!stripe ||
+					!elements ||
+					updateState.checkoutBillingUpdate === "loading" ||
+					!checkout.billingAddress
+				}
 				id="submit"
 				type="submit"
 			>

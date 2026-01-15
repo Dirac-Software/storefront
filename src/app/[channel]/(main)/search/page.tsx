@@ -3,11 +3,12 @@ import { OrderDirection, ProductOrderField, SearchProductsDocument } from "@/gql
 import { executeGraphQL } from "@/lib/graphql";
 import { Pagination } from "@/ui/components/Pagination";
 import { ProductList } from "@/ui/components/ProductList";
+import { ProductsPerPage } from "@/app/config";
 import { getPaginatedListVariables } from "@/lib/utils";
 
 export const metadata = {
-	title: "Search products · Saleor Storefront example",
-	description: "Search products in Saleor Storefront example",
+	title: "Search products · Sports Wholesale",
+	description: "Search wholesale sports products at Sports Wholesale",
 };
 
 export default async function Page(props: {
@@ -51,12 +52,20 @@ export default async function Page(props: {
 		<section className="mx-auto max-w-7xl p-8 pb-16">
 			{products.totalCount && products.totalCount > 0 ? (
 				<div>
-					<h1 className="pb-8 text-xl font-semibold">Search results for &quot;{searchValue}&quot;:</h1>
+					<h1 className="pb-8 text-xl font-semibold text-dark-text-primary">
+						Search results for &quot;{searchValue}&quot;:
+					</h1>
 					<ProductList products={products.edges.map((e) => e.node)} />
-					<Pagination pageInfo={products.pageInfo} />
+					<Pagination
+						pageInfo={products.pageInfo}
+						totalCount={products.totalCount}
+						pageSize={ProductsPerPage}
+					/>
 				</div>
 			) : (
-				<h1 className="mx-auto pb-8 text-center text-xl font-semibold">Nothing found :(</h1>
+				<h1 className="mx-auto pb-8 text-center text-xl font-semibold text-dark-text-primary">
+					Nothing found :(
+				</h1>
 			)}
 		</section>
 	);

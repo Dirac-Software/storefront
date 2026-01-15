@@ -1,0 +1,11 @@
+query PagesList($channel: String!) {
+	pages(first: 100, channel: $channel) {
+		edges {
+			node {
+				id
+				slug
+				title
+			}
+		}
+	}
+}

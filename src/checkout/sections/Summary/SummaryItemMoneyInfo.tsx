@@ -17,8 +17,8 @@ export const SummaryItemMoneyInfo: FC<SummaryItemMoneyInfoProps> = ({
 	undiscountedUnitPrice,
 }) => {
 	const multiplePieces = quantity > 1;
-	const piecePrice = unitPrice.gross;
-	const onSale = undiscountedUnitPrice.amount !== unitPrice.gross.amount;
+	const piecePrice = unitPrice.net || unitPrice.gross;
+	const onSale = undiscountedUnitPrice.amount !== (unitPrice.net?.amount || unitPrice.gross.amount);
 
 	return (
 		<div className="flex flex-col items-end justify-end">

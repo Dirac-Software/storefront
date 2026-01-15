@@ -8,6 +8,10 @@ fragment VariantDetails on ProductVariant {
 				currency
 				amount
 			}
+			net {
+				currency
+				amount
+			}
 		}
 	}
 }

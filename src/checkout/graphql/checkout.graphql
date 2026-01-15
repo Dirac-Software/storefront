@@ -88,6 +88,9 @@ fragment CheckoutFragment on Checkout {
 		gross {
 			...Money
 		}
+		net {
+			...Money
+		}
 		tax {
 			...Money
 		}
@@ -96,9 +99,15 @@ fragment CheckoutFragment on Checkout {
 		gross {
 			...Money
 		}
+		net {
+			...Money
+		}
 	}
 	subtotalPrice {
 		gross {
+			...Money
+		}
+		net {
 			...Money
 		}
 	}
@@ -115,9 +124,16 @@ fragment CheckoutLineFragment on CheckoutLine {
 			currency
 			amount
 		}
+		net {
+			currency
+			amount
+		}
 	}
 	unitPrice {
 		gross {
+			...Money
+		}
+		net {
 			...Money
 		}
 	}

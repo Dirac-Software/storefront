@@ -5,12 +5,11 @@ import { type ResolvingMetadata, type Metadata } from "next";
 import xss from "xss";
 import { invariant } from "ts-invariant";
 import { type WithContext, type Product } from "schema-dts";
-import { AddButton } from "./AddButton";
-import { VariantSelector } from "@/ui/components/VariantSelector";
+import { PackSizeSelector } from "./PackSizeSelector";
 import { ProductImageWrapper } from "@/ui/atoms/ProductImageWrapper";
 import { executeGraphQL } from "@/lib/graphql";
 import { formatMoney, formatMoneyRange } from "@/lib/utils";
-import { CheckoutAddLineDocument, ProductDetailsDocument, ProductListDocument } from "@/gql/graphql";
+import { CheckoutAddPackDocument, ProductDetailsDocument, ProductListDocument } from "@/gql/graphql";
 import * as Checkout from "@/lib/checkout";
 import { AvailabilityMessage } from "@/ui/components/AvailabilityMessage";
 
@@ -97,8 +96,14 @@ export default async function Page(props: {
 	const selectedVariantID = searchParams.variant;
 	const selectedVariant = variants?.find(({ id }) => id === selectedVariantID);
 
-	async function addItem() {
+	async function addPack(formData: FormData) {
 		"use server";
+
+		const packSize = parseInt(formData.get("packSize") as string, 10);
+
+		if (!packSize || packSize <= 0) {
+			return;
+		}
 
 		const checkout = await Checkout.findOrCreate({
 			checkoutId: await Checkout.getIdFromCookies(params.channel),
@@ -108,15 +113,34 @@ export default async function Page(props: {
 
 		await Checkout.saveIdToCookie(params.channel, checkout.id);
 
-		if (!selectedVariantID) {
-			return;
+		// Check if a pack for this product already exists and remove it first
+		const existingCheckout = await Checkout.find(checkout.id);
+		if (existingCheckout) {
+			const existingPackLines = existingCheckout.lines.filter(
+				(line) =>
+					line.variant.product.id === product.id &&
+					line.metadata?.some((m) => m.key === "is_pack_item" && m.value === "true"),
+			);
+
+			if (existingPackLines.length > 0) {
+				// Delete existing pack lines for this product
+				const { CheckoutDeleteLinesDocument } = await import("@/gql/graphql");
+				await executeGraphQL(CheckoutDeleteLinesDocument, {
+					variables: {
+						checkoutId: checkout.id,
+						lineIds: existingPackLines.map((line) => line.id),
+					},
+					cache: "no-cache",
+				});
+			}
 		}
 
-		// TODO: error handling
-		await executeGraphQL(CheckoutAddLineDocument, {
+		// Add the new pack
+		await executeGraphQL(CheckoutAddPackDocument, {
 			variables: {
 				id: checkout.id,
-				productVariantId: decodeURIComponent(selectedVariantID),
+				productId: product.id,
+				packSize,
 			},
 			cache: "no-cache",
 		});
@@ -126,14 +150,47 @@ export default async function Page(props: {
 
 	const isAvailable = variants?.some((variant) => variant.quantityAvailable) ?? false;
 
-	const price = selectedVariant?.pricing?.price?.gross
-		? formatMoney(selectedVariant.pricing.price.gross.amount, selectedVariant.pricing.price.gross.currency)
+	const price = selectedVariant?.pricing?.price?.net
+		? formatMoney(selectedVariant.pricing.price.net.amount, selectedVariant.pricing.price.net.currency)
 		: isAvailable
 			? formatMoneyRange({
-					start: product?.pricing?.priceRange?.start?.gross,
-					stop: product?.pricing?.priceRange?.stop?.gross,
+					start: product?.pricing?.priceRange?.start?.net,
+					stop: product?.pricing?.priceRange?.stop?.net,
 				})
 			: "";
+
+	// Extract minimum order quantity from product attributes
+	const minimumOrderQuantity = product.attributes?.find(
+		(attr) => attr.attribute.slug === "minimum-order-quantity",
+	)?.values?.[0]?.name;
+	const minOrderQty = minimumOrderQuantity ? parseInt(minimumOrderQuantity, 10) : 0;
+
+	// Calculate total available quantity across all variants
+	const totalAvailableQuantity =
+		variants?.reduce((sum, variant) => sum + (variant.quantityAvailable || 0), 0) || 0;
+
+	// Calculate effective minimum (backend logic: min of available stock and minimum order quantity)
+	const effectiveMinimum = Math.min(minOrderQty || totalAvailableQuantity, totalAvailableQuantity);
+
+	// Extract brand from product attributes
+	const brand = product.attributes?.find((attr) => attr.attribute.slug === "brand")?.values?.[0]?.name;
+
+	// Extract SKU/product code from product attributes
+	const productCode =
+		product.attributes?.find(
+			(attr) => attr.attribute.slug === "product-code" || attr.attribute.slug === "sku",
+		)?.values?.[0]?.name ||
+		selectedVariant?.sku ||
+		product.defaultVariant?.sku;
+
+	// Extract RRP from product attributes
+	const rrpAttribute = product.attributes?.find((attr) => attr.attribute.slug === "rrp")?.values?.[0]?.name;
+	const rrpValue = rrpAttribute ? parseFloat(rrpAttribute) : null;
+	const currency =
+		selectedVariant?.pricing?.price?.net.currency ||
+		product?.pricing?.priceRange?.start?.net.currency ||
+		"GBP";
+	const rrpFormatted = rrpValue ? formatMoney(rrpValue, currency) : null;
 
 	const productJsonLd: WithContext<Product> = {
 		"@context": "https://schema.org",
@@ -148,8 +205,8 @@ export default async function Page(props: {
 						availability: selectedVariant.quantityAvailable
 							? "https://schema.org/InStock"
 							: "https://schema.org/OutOfStock",
-						priceCurrency: selectedVariant.pricing?.price?.gross.currency,
-						price: selectedVariant.pricing?.price?.gross.amount,
+						priceCurrency: selectedVariant.pricing?.price?.net.currency,
+						price: selectedVariant.pricing?.price?.net.amount,
 					},
 				}
 			: {
@@ -161,9 +218,9 @@ export default async function Page(props: {
 						availability: product.variants?.some((variant) => variant.quantityAvailable)
 							? "https://schema.org/InStock"
 							: "https://schema.org/OutOfStock",
-						priceCurrency: product.pricing?.priceRange?.start?.gross.currency,
-						lowPrice: product.pricing?.priceRange?.start?.gross.amount,
-						highPrice: product.pricing?.priceRange?.stop?.gross.amount,
+						priceCurrency: product.pricing?.priceRange?.start?.net.currency,
+						lowPrice: product.pricing?.priceRange?.start?.net.amount,
+						highPrice: product.pricing?.priceRange?.stop?.net.amount,
 					},
 				}),
 	};
@@ -176,41 +233,119 @@ export default async function Page(props: {
 					__html: JSON.stringify(productJsonLd),
 				}}
 			/>
-			<form className="grid gap-2 sm:grid-cols-2 lg:grid-cols-8" action={addItem}>
-				<div className="md:col-span-1 lg:col-span-5">
+			<form className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2" action={addPack}>
+				{/* Left Column - Image + Trust Badges */}
+				<div className="space-y-6">
 					{firstImage && (
-						<ProductImageWrapper
-							priority={true}
-							alt={firstImage.alt ?? ""}
-							width={1024}
-							height={1024}
-							src={firstImage.url}
-						/>
+						<div className="overflow-hidden rounded-lg border border-dark-border bg-dark-card p-4">
+							<ProductImageWrapper
+								priority={true}
+								alt={firstImage.alt ?? ""}
+								width={1024}
+								height={1024}
+								src={firstImage.url}
+							/>
+						</div>
 					)}
+
+					{/* Trust Badges */}
+					<div className="grid grid-cols-3 gap-4">
+						<div className="text-center">
+							<div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg border border-dark-border bg-dark-card">
+								<svg
+									className="h-6 w-6 text-dark-text-secondary"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
+								</svg>
+							</div>
+							<p className="text-xs font-semibold text-dark-text-primary">Authentic</p>
+							<p className="text-xs text-dark-text-secondary">branded stock</p>
+						</div>
+						<div className="text-center">
+							<div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg border border-dark-border bg-dark-card">
+								<svg
+									className="h-6 w-6 text-dark-text-secondary"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+									/>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+									/>
+								</svg>
+							</div>
+							<p className="text-xs font-semibold text-dark-text-primary">UK dispatch</p>
+							<p className="text-xs text-dark-text-secondary">Fast, direct from storage</p>
+						</div>
+						<div className="text-center">
+							<div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg border border-dark-border bg-dark-card">
+								<svg
+									className="h-6 w-6 text-dark-text-secondary"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+									/>
+								</svg>
+							</div>
+							<p className="text-xs font-semibold text-dark-text-primary">Dedicated trade support</p>
+							<p className="text-xs text-dark-text-secondary">Expert assistance</p>
+						</div>
+					</div>
 				</div>
-				<div className="flex flex-col pt-6 sm:col-span-1 sm:px-6 sm:pt-0 lg:col-span-3 lg:pt-16">
+
+				{/* Right Column - Product Details */}
+				<div className="flex flex-col space-y-4">
 					<div>
-						<h1 className="mb-4 flex-auto text-3xl font-medium tracking-tight text-neutral-900">
-							{product?.name}
-						</h1>
-						<p className="mb-8 text-sm " data-testid="ProductElement_Price">
-							{price}
+						{brand && <p className="mb-2 text-sm font-medium uppercase text-dark-text-muted">{brand}</p>}
+						<h1 className="mb-2 text-3xl font-bold tracking-tight text-dark-text-primary">{product?.name}</h1>
+						{productCode && (
+							<p className="mb-4 text-sm text-dark-text-secondary">Product Code: {productCode}</p>
+						)}
+						<p className="mb-6 text-2xl font-bold text-blue-600" data-testid="ProductElement_Price">
+							Trade price: {price}
 						</p>
 
-						{variants && (
-							<VariantSelector
-								selectedVariant={selectedVariant}
-								variants={variants}
-								product={product}
-								channel={params.channel}
-							/>
-						)}
-						<AvailabilityMessage isAvailable={isAvailable} />
-						<div className="mt-8">
-							<AddButton disabled={!selectedVariantID || !selectedVariant?.quantityAvailable} />
+						{/* RRP and Stock Info */}
+						<div className="mb-6 space-y-1 text-sm text-dark-text-secondary">
+							{rrpFormatted && <p>RRP: {rrpFormatted}</p>}
+							{effectiveMinimum > 0 && <p>Minimum order: {effectiveMinimum} units</p>}
+							{totalAvailableQuantity > 0 && <p>In stock: {totalAvailableQuantity} units</p>}
 						</div>
+
+						<AvailabilityMessage isAvailable={isAvailable} />
+
+						<PackSizeSelector
+							productId={product.id}
+							channelSlug={params.channel}
+							minimumOrderQuantity={effectiveMinimum}
+							totalAvailableQuantity={totalAvailableQuantity}
+						/>
+
 						{description && (
-							<div className="mt-8 space-y-6 text-sm text-neutral-500">
+							<div className="mt-8 space-y-6 text-sm text-dark-text-secondary">
 								{description.map((content) => (
 									<div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
 								))}

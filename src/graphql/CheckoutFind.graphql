@@ -5,8 +5,16 @@ query CheckoutFind($id: ID!) {
 		lines {
 			id
 			quantity
+			metadata {
+				key
+				value
+			}
 			totalPrice {
 				gross {
+					amount
+					currency
+				}
+				net {
 					amount
 					currency
 				}

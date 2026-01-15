@@ -33,7 +33,7 @@ export const Checkout = () => {
 							<CheckoutForm />
 						</Suspense>
 						<Suspense fallback={<SummarySkeleton />}>
-							<Summary {...checkout} />
+							<Summary {...checkout} editable={true} />
 						</Suspense>
 					</div>
 				)}

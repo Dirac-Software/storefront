@@ -86,9 +86,15 @@ fragment OrderFragment on Order {
 		gross {
 			...Money
 		}
+		net {
+			...Money
+		}
 	}
 	subtotal {
 		gross {
+			...Money
+		}
+		net {
 			...Money
 		}
 	}

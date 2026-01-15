@@ -1,0 +1,18 @@
+query CategoriesList {
+	categories(first: 10, level: 0) {
+		edges {
+			node {
+				id
+				name
+				slug
+				description
+				seoDescription
+				seoTitle
+				backgroundImage {
+					url
+					alt
+				}
+			}
+		}
+	}
+}

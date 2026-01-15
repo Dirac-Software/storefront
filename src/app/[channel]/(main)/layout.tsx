@@ -3,8 +3,8 @@ import { Footer } from "@/ui/components/Footer";
 import { Header } from "@/ui/components/Header";
 
 export const metadata = {
-	title: "Saleor Storefront example",
-	description: "Starter pack for building performant e-commerce experiences with Saleor.",
+	title: "Sports Wholesale",
+	description: "Sports Wholesale - Your trusted source for wholesale sports equipment and apparel.",
 };
 
 export default async function RootLayout(props: {
@@ -16,7 +16,7 @@ export default async function RootLayout(props: {
 	return (
 		<>
 			<Header channel={channel} />
-			<div className="flex min-h-[calc(100dvh-64px)] flex-col">
+			<div className="flex min-h-[calc(100dvh-128px)] flex-col md:min-h-[calc(100dvh-160px)] lg:min-h-[calc(100dvh-192px)]">
 				<main className="flex-1">{props.children}</main>
 				<Footer channel={channel} />
 			</div>

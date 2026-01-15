@@ -1,0 +1,24 @@
+mutation CheckoutAddPack($id: ID!, $productId: ID!, $packSize: Int!) {
+	checkoutAddPack(id: $id, productId: $productId, packSize: $packSize) {
+		checkout {
+			id
+			lines {
+				id
+				quantity
+				variant {
+					id
+					name
+					product {
+						id
+						name
+					}
+				}
+			}
+		}
+		errors {
+			message
+			field
+			code
+		}
+	}
+}

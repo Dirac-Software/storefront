@@ -14,6 +14,14 @@ query ProductDetails($slug: String!, $channel: String!) {
 			id
 			name
 		}
+		attributes {
+			attribute {
+				slug
+			}
+			values {
+				name
+			}
+		}
 		variants {
 			...VariantDetails
 		}
@@ -24,9 +32,17 @@ query ProductDetails($slug: String!, $channel: String!) {
 						amount
 						currency
 					}
+					net {
+						amount
+						currency
+					}
 				}
 				stop {
 					gross {
+						amount
+						currency
+					}
+					net {
 						amount
 						currency
 					}

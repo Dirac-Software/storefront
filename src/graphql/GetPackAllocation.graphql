@@ -1,0 +1,36 @@
+query GetPackAllocation($productId: ID!, $packSize: Int!, $channelSlug: String!, $checkoutId: ID) {
+	getPackAllocation(
+		productId: $productId
+		packSize: $packSize
+		channelSlug: $channelSlug
+		checkoutId: $checkoutId
+	) {
+		allocation {
+			variant {
+				id
+				name
+				quantityAvailable
+				pricing {
+					price {
+						gross {
+							amount
+							currency
+						}
+						net {
+							amount
+							currency
+						}
+					}
+				}
+			}
+			quantity
+		}
+		canAdd
+		currentQuantity
+		packQuantity
+		totalQuantity
+		minimumRequired
+		shortfall
+		message
+	}
+}

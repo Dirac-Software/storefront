@@ -15,7 +15,7 @@ export const generateMetadata = async (props: { params: Promise<{ slug: string }
 	});
 
 	return {
-		title: `${page?.seoTitle || page?.title || "Page"} · Saleor Storefront example`,
+		title: `${page?.seoTitle || page?.title || "Page"} · Sports Wholesale`,
 		description: page?.seoDescription || page?.seoTitle || page?.title,
 	};
 };
@@ -33,16 +33,38 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 
 	const { title, content } = page;
 
-	const contentHtml = content ? parser.parse(JSON.parse(content)) : null;
+	// Check if content is EditorJS JSON or plain HTML
+	let contentHtml: string | string[] | null = null;
+
+	if (content) {
+		try {
+			// Try parsing as EditorJS JSON
+			const parsed = JSON.parse(content);
+			if (parsed.blocks || parsed.time) {
+				// It's EditorJS format
+				contentHtml = parser.parse(parsed);
+			} else {
+				// It's plain HTML
+				contentHtml = content;
+			}
+		} catch {
+			// If JSON parsing fails, treat as plain HTML
+			contentHtml = content;
+		}
+	}
 
 	return (
 		<div className="mx-auto max-w-7xl p-8 pb-16">
-			<h1 className="text-3xl font-semibold">{title}</h1>
+			<h1 className="mb-6 text-3xl font-semibold">{title}</h1>
 			{contentHtml && (
-				<div className="prose">
-					{contentHtml.map((content) => (
-						<div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
-					))}
+				<div className="prose prose-neutral max-w-none">
+					{Array.isArray(contentHtml) ? (
+						contentHtml.map((htmlBlock, index) => (
+							<div key={index} dangerouslySetInnerHTML={{ __html: xss(htmlBlock) }} />
+						))
+					) : (
+						<div dangerouslySetInnerHTML={{ __html: xss(contentHtml) }} />
+					)}
 				</div>
 			)}
 		</div>

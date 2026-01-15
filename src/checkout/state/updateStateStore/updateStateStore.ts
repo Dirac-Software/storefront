@@ -34,6 +34,7 @@ const useCheckoutUpdateStateStore = createWithEqualityFn<CheckoutUpdateStateStor
 		changingBillingCountry: false,
 		updateState: {
 			paymentGatewaysInitialize: "success",
+			checkoutComplete: "success",
 			checkoutShippingUpdate: "success",
 			checkoutCustomerAttach: "success",
 			checkoutBillingUpdate: "success",

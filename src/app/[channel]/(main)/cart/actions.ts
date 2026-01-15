@@ -20,3 +20,15 @@ export const deleteLineFromCheckout = async ({ lineId, checkoutId }: deleteLineF
 
 	revalidatePath("/cart");
 };
+
+export const deletePack = async (checkoutId: string, lineIds: string[]) => {
+	await executeGraphQL(CheckoutDeleteLinesDocument, {
+		variables: {
+			checkoutId,
+			lineIds,
+		},
+		cache: "no-cache",
+	});
+
+	revalidatePath("/cart");
+};

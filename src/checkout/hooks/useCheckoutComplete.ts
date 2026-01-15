@@ -13,6 +13,7 @@ export const useCheckoutComplete = () => {
 	const onCheckoutComplete = useSubmit<{}, typeof checkoutComplete>(
 		useMemo(
 			() => ({
+				scope: "checkoutComplete",
 				parse: () => ({
 					checkoutId,
 				}),

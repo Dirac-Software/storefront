@@ -49,16 +49,9 @@ export const SummaryItemMoneyEditableSection: React.FC<SummaryItemMoneyEditableS
 
 	return (
 		<div className="flex flex-col items-end gap-2">
-			<FormProvider form={form}>
-				<TextInput
-					required
-					onChange={handleChange}
-					onBlur={handleQuantityInputBlur}
-					name="quantity"
-					label="Quantity"
-					className="max-w-[6ch] text-center"
-				/>
-			</FormProvider>
+			<div className="text-sm text-neutral-500">
+				Qty: <span className="font-semibold text-neutral-900">{line.quantity}</span>
+			</div>
 			{isSubmitting ? (
 				<div className="flex max-w-[6ch] flex-col">
 					<Skeleton />
