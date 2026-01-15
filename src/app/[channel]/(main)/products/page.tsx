@@ -116,7 +116,7 @@ export default async function Page(props: {
 				<ProductList products={products.edges.map((e) => e.node)} />
 				<Pagination
 					pageInfo={products.pageInfo}
-					totalCount={products.totalCount}
+					totalCount={products.totalCount ?? undefined}
 					pageSize={ProductsPerPage}
 				/>
 			</section>

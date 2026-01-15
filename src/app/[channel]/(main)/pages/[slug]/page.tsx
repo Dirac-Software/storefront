@@ -39,7 +39,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	if (content) {
 		try {
 			// Try parsing as EditorJS JSON
-			const parsed = JSON.parse(content);
+			const parsed = JSON.parse(content) as { blocks?: unknown; time?: unknown };
 			if (parsed.blocks || parsed.time) {
 				// It's EditorJS format
 				contentHtml = parser.parse(parsed);

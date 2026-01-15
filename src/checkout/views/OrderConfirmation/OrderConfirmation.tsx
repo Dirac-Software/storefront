@@ -26,8 +26,13 @@ export const OrderConfirmation = () => {
 					// for now there can only be one voucher per order in the api
 					discount={order?.discounts?.find(({ type }) => type === "VOUCHER")?.amount}
 					voucherCode={order?.voucher?.code}
-					totalPrice={order?.total}
-					subtotalPrice={order?.subtotal}
+					totalPrice={order?.total ? { ...order.total, net: order.total.gross } : undefined}
+					subtotalPrice={order?.subtotal ? { ...order.subtotal, net: order.subtotal.gross } : undefined}
+					shippingPrice={
+						order?.shippingPrice
+							? { ...order.shippingPrice, net: order.shippingPrice.gross }
+							: { gross: { amount: 0, currency: "GBP" }, net: { amount: 0, currency: "GBP" } }
+					}
 					editable={false}
 				/>
 			</Suspense>

@@ -22,7 +22,7 @@ export function PackSizeSelector({
 	channelSlug,
 	checkoutId,
 	minimumOrderQuantity = 0,
-	totalAvailableQuantity = 0,
+	totalAvailableQuantity: _totalAvailableQuantity = 0,
 	onPackSizeChange,
 }: PackSizeSelectorProps) {
 	const [packSize, setPackSize] = useState(Math.max(0, minimumOrderQuantity));
@@ -66,7 +66,7 @@ export function PackSizeSelector({
 				});
 
 				console.log("PackSizeSelector: allocation result", result);
-				setAllocation(result);
+				setAllocation(result ?? null);
 			} catch (error) {
 				console.error("Failed to fetch pack allocation:", error);
 			} finally {

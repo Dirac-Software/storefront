@@ -3,15 +3,7 @@
 import { useTransition } from "react";
 import { deletePack } from "./actions";
 
-export function DeletePackButton({
-	checkoutId,
-	packId,
-	lineIds,
-}: {
-	checkoutId: string;
-	packId: string;
-	lineIds: string[];
-}) {
+export function DeletePackButton({ checkoutId, lineIds }: { checkoutId: string; lineIds: string[] }) {
 	const [pending, startTransition] = useTransition();
 
 	return (

@@ -81,7 +81,7 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 											)}
 										</div>
 										<p className="text-right font-semibold text-blue-600">
-											{formatMoney(item.totalPrice.net.amount, item.totalPrice.net.currency)}
+											{formatMoney(item.totalPrice.gross.amount, item.totalPrice.gross.currency)}
 										</p>
 									</div>
 									<div className="flex justify-between">

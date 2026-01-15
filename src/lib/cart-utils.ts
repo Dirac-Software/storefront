@@ -95,8 +95,8 @@ export function groupCartItems(lines: CheckoutLine[]): CartItem[] {
 		const packSize = getMetadataValue(firstLine.metadata, "pack_size") ?? "Unknown";
 
 		// Calculate total price for the pack
-		const totalAmount = packLines.reduce((sum, line) => sum + line.totalPrice.net.amount, 0);
-		const currency = firstLine.totalPrice.net.currency;
+		const totalAmount = packLines.reduce((sum, line) => sum + line.totalPrice.gross.amount, 0);
+		const currency = firstLine.totalPrice.gross.currency;
 
 		result.push({
 			type: "pack",

@@ -40,7 +40,7 @@ export function PackGroup({ pack, checkoutId }: PackGroupProps) {
 											{line.variant.name}: <span className="font-medium">{line.quantity}x</span>
 										</span>
 										<span className="text-dark-text-muted">
-											{formatMoney(line.totalPrice.net.amount, line.totalPrice.net.currency)}
+											{formatMoney(line.totalPrice.gross.amount, line.totalPrice.gross.currency)}
 										</span>
 									</div>
 								))}
@@ -57,11 +57,7 @@ export function PackGroup({ pack, checkoutId }: PackGroupProps) {
 						>
 							Change Pack Size
 						</LinkWithChannel>
-						<DeletePackButton
-							checkoutId={checkoutId}
-							packId={pack.packId}
-							lineIds={pack.lines.map((line) => line.id)}
-						/>
+						<DeletePackButton checkoutId={checkoutId} lineIds={pack.lines.map((line) => line.id)} />
 					</div>
 				</div>
 			</div>

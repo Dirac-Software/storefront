@@ -6,11 +6,14 @@ services:
     build:
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_SALEOR_API_URL: ${NEXT_PUBLIC_SALEOR_API_URL}
-        NEXT_PUBLIC_STOREFRONT_URL: ${NEXT_PUBLIC_STOREFRONT_URL}
+        - NEXT_PUBLIC_SALEOR_API_URL
+        - NEXT_PUBLIC_STOREFRONT_URL
+        - NEXT_PUBLIC_DEFAULT_CHANNEL
+    env_file:
+      - .env
     restart: always
     ports:
-      - 3000:3000
+      - 9005:3000
     networks:
       - saleor_network
 

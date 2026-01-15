@@ -2,7 +2,6 @@ import { type FC } from "react";
 import clsx from "clsx";
 import { SummaryItem, type SummaryLine } from "./SummaryItem";
 import { PromoCodeAdd } from "./PromoCodeAdd";
-import { SummaryMoneyRow } from "./SummaryMoneyRow";
 import { SummaryPromoCodeRow } from "./SummaryPromoCodeRow";
 import { SummaryItemMoneyEditableSection } from "./SummaryItemMoneyEditableSection";
 import { ChevronDownIcon } from "@/checkout/ui-kit/icons";
@@ -33,10 +32,10 @@ export const Summary: FC<SummaryProps> = ({
 	editable = true,
 	lines,
 	totalPrice,
-	subtotalPrice,
+	subtotalPrice: _subtotalPrice,
 	giftCards = [],
 	voucherCode,
-	shippingPrice,
+	shippingPrice: _shippingPrice,
 	discount,
 }) => {
 	return (

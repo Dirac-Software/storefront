@@ -9,7 +9,11 @@ export const SummaryItemMoneySection: React.FC<LineItemQuantitySelectorProps> = 
 	return (
 		<div className="flex flex-col items-end">
 			<p>Qty: {line.quantity}</p>
-			<SummaryItemMoneyInfo {...line} undiscountedUnitPrice={line.undiscountedUnitPrice.gross} />
+			<SummaryItemMoneyInfo
+				unitPrice={{ gross: line.unitPrice.gross, net: line.unitPrice.gross }}
+				undiscountedUnitPrice={line.undiscountedUnitPrice.gross}
+				quantity={line.quantity}
+			/>
 		</div>
 	);
 };

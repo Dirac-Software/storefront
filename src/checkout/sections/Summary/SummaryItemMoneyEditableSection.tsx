@@ -1,10 +1,7 @@
-import { useMemo } from "react";
 import { type CheckoutLineFragment } from "@/checkout/graphql";
-import { TextInput } from "@/checkout/components/TextInput";
 
 import { Skeleton } from "@/checkout/components";
 import { SummaryItemMoneyInfo } from "@/checkout/sections/Summary/SummaryItemMoneyInfo";
-import { FormProvider } from "@/checkout/hooks/useForm/FormProvider";
 import { useSummaryItemForm } from "@/checkout/sections/Summary/useSummaryItemForm";
 
 interface SummaryItemMoneyEditableSectionProps {
@@ -12,40 +9,16 @@ interface SummaryItemMoneyEditableSectionProps {
 }
 
 export const SummaryItemMoneyEditableSection: React.FC<SummaryItemMoneyEditableSectionProps> = ({ line }) => {
-	const { form, onLineDelete } = useSummaryItemForm({ line });
+	const { form, onLineDelete: _onLineDelete } = useSummaryItemForm({ line });
 
 	const {
-		handleBlur,
-		handleChange,
-		setFieldValue,
-		handleSubmit,
+		handleBlur: _handleBlur,
+		handleChange: _handleChange,
+		setFieldValue: _setFieldValue,
+		handleSubmit: _handleSubmit,
 		isSubmitting,
-		values: { quantity: quantityString },
+		values: { quantity: _quantityString },
 	} = form;
-
-	const quantity = useMemo(() => parseInt(quantityString), [quantityString]);
-
-	const handleQuantityInputBlur = (event: React.FocusEvent<any, Element>) => {
-		handleBlur(event);
-
-		if (quantity === line.quantity) {
-			return;
-		}
-
-		const isQuantityValid = !Number.isNaN(quantity) && quantity >= 0;
-
-		if (quantityString === "" || !isQuantityValid) {
-			void setFieldValue("quantity", String(line.quantity));
-			return;
-		}
-
-		if (quantity === 0) {
-			void onLineDelete();
-			return;
-		}
-
-		void handleSubmit();
-	};
 
 	return (
 		<div className="flex flex-col items-end gap-2">
@@ -58,7 +31,11 @@ export const SummaryItemMoneyEditableSection: React.FC<SummaryItemMoneyEditableS
 					<Skeleton />
 				</div>
 			) : (
-				<SummaryItemMoneyInfo {...line} />
+				<SummaryItemMoneyInfo
+					unitPrice={{ gross: line.unitPrice.gross, net: line.unitPrice.gross }}
+					undiscountedUnitPrice={line.undiscountedUnitPrice}
+					quantity={line.quantity}
+				/>
 			)}
 		</div>
 	);

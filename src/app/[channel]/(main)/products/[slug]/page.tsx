@@ -89,12 +89,16 @@ export default async function Page(props: {
 		notFound();
 	}
 
+	// TypeScript doesn't know notFound() never returns, so we assert product is defined
+	invariant(product, "Product must exist after notFound check");
+
 	const firstImage = product.thumbnail;
 	const description = product?.description ? parser.parse(JSON.parse(product?.description)) : null;
 
 	const variants = product.variants;
 	const selectedVariantID = searchParams.variant;
 	const selectedVariant = variants?.find(({ id }) => id === selectedVariantID);
+	const productId = product.id; // Capture for use in server action
 
 	async function addPack(formData: FormData) {
 		"use server";
@@ -118,7 +122,7 @@ export default async function Page(props: {
 		if (existingCheckout) {
 			const existingPackLines = existingCheckout.lines.filter(
 				(line) =>
-					line.variant.product.id === product.id &&
+					line.variant.product.id === productId &&
 					line.metadata?.some((m) => m.key === "is_pack_item" && m.value === "true"),
 			);
 
@@ -139,7 +143,7 @@ export default async function Page(props: {
 		await executeGraphQL(CheckoutAddPackDocument, {
 			variables: {
 				id: checkout.id,
-				productId: product.id,
+				productId: productId,
 				packSize,
 			},
 			cache: "no-cache",
@@ -176,12 +180,9 @@ export default async function Page(props: {
 	const brand = product.attributes?.find((attr) => attr.attribute.slug === "brand")?.values?.[0]?.name;
 
 	// Extract SKU/product code from product attributes
-	const productCode =
-		product.attributes?.find(
-			(attr) => attr.attribute.slug === "product-code" || attr.attribute.slug === "sku",
-		)?.values?.[0]?.name ||
-		selectedVariant?.sku ||
-		product.defaultVariant?.sku;
+	const productCode = product.attributes?.find(
+		(attr) => attr.attribute.slug === "product-code" || attr.attribute.slug === "sku",
+	)?.values?.[0]?.name;
 
 	// Extract RRP from product attributes
 	const rrpAttribute = product.attributes?.find((attr) => attr.attribute.slug === "rrp")?.values?.[0]?.name;
