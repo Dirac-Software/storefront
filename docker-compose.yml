@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  saleor-storefront:
+  storefront:
     container_name: saleor-storefront
     build:
       dockerfile: Dockerfile
