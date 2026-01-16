@@ -8,6 +8,7 @@ import { type GrossMoney } from "@/checkout/lib/globalTypes";
 interface SummaryItemMoneyInfoProps {
 	unitPrice: GrossMoney;
 	undiscountedUnitPrice: MoneyType;
+	totalPrice: GrossMoney;
 	quantity: number;
 }
 
@@ -15,34 +16,17 @@ export const SummaryItemMoneyInfo: FC<SummaryItemMoneyInfoProps> = ({
 	unitPrice,
 	quantity,
 	undiscountedUnitPrice,
+	totalPrice,
 }) => {
 	const multiplePieces = quantity > 1;
 	const piecePrice = unitPrice.net || unitPrice.gross;
-	const onSale = undiscountedUnitPrice.amount !== (unitPrice.net?.amount || unitPrice.gross.amount);
+	const totalPriceNet = totalPrice.net || totalPrice.gross;
+	const totalPriceGross = totalPrice.gross;
 
 	return (
 		<div className="flex flex-col items-end justify-end">
 			<div className="flex flex-row flex-wrap justify-end gap-x-2">
-				{onSale && (
-					<Money
-						ariaLabel="undiscounted price"
-						money={{
-							currency: undiscountedUnitPrice.currency,
-							amount: undiscountedUnitPrice.amount * quantity,
-						}}
-						className="line-through"
-					/>
-				)}
-				<Money
-					ariaLabel="total price"
-					money={{
-						currency: piecePrice?.currency,
-						amount: (piecePrice?.amount || 0) * quantity,
-					}}
-					className={clsx({
-						"!text-text-error": onSale,
-					})}
-				/>
+				<Money ariaLabel="total price (incl. VAT)" money={totalPriceGross} />
 			</div>
 
 			{multiplePieces && (

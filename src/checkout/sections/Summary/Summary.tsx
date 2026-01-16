@@ -47,7 +47,7 @@ export const Summary: FC<SummaryProps> = ({
 		>
 			<details open className="group">
 				<summary className="-mb-2 flex cursor-pointer flex-row items-center pt-4">
-					<Title>Summary</Title>
+					<Title>Summary - all prices incl. VAT</Title>
 					<ChevronDownIcon className="mb-2 group-open:rotate-180" />
 				</summary>
 				<ul className="py-2" data-testid="SummaryProductList">
@@ -91,6 +91,14 @@ export const Summary: FC<SummaryProps> = ({
 					/>
 				))}
 				<Divider className="my-4" />
+				<div className="flex flex-row items-baseline justify-between pb-2">
+					<p>Shipping (incl. VAT)</p>
+					<Money
+						ariaLabel="shipping price"
+						money={_shippingPrice?.gross || _shippingPrice?.net}
+						data-testid="shippingPrice"
+					/>
+				</div>
 				<div className="flex flex-row items-baseline justify-between pb-4">
 					<div className="flex flex-row items-baseline">
 						<p className="font-bold">Total price</p>
