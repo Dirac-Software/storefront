@@ -15,6 +15,37 @@ import {
 } from "@/checkout/graphql";
 import { type MightNotExist } from "@/checkout/lib/globalTypes";
 
+// EU country codes
+export const EU_COUNTRIES: CountryCode[] = [
+	"AT", // Austria
+	"BE", // Belgium
+	"BG", // Bulgaria
+	"HR", // Croatia
+	"CY", // Cyprus
+	"CZ", // Czech Republic
+	"DK", // Denmark
+	"EE", // Estonia
+	"FI", // Finland
+	"FR", // France
+	"DE", // Germany
+	"GR", // Greece
+	"HU", // Hungary
+	"IE", // Ireland
+	"IT", // Italy
+	"LV", // Latvia
+	"LT", // Lithuania
+	"LU", // Luxembourg
+	"MT", // Malta
+	"NL", // Netherlands
+	"PL", // Poland
+	"PT", // Portugal
+	"RO", // Romania
+	"SK", // Slovakia
+	"SI", // Slovenia
+	"ES", // Spain
+	"SE", // Sweden
+];
+
 export const getEmptyAddressFormData = (): AddressFormData => ({
 	firstName: "",
 	lastName: "",
@@ -27,6 +58,7 @@ export const getEmptyAddressFormData = (): AddressFormData => ({
 	postalCode: "",
 	phone: "",
 	countryCode: "US",
+	vatNumber: "",
 });
 
 export const getEmptyAddress = (): AddressFragment => {
@@ -42,21 +74,32 @@ export const getEmptyAddress = (): AddressFragment => {
 	};
 };
 
-export const getAllAddressFieldKeys = () => Object.keys(getEmptyAddressFormData());
+export const getAllAddressFieldKeys = () =>
+	Object.keys(getEmptyAddressFormData()).filter((key) => key !== "vatNumber");
 
 export const getAddressInputData = ({
 	countryCode,
 	country,
+	vatNumber,
 	...rest
 }: Partial<
 	AddressFormData & {
 		countryCode?: CountryCode;
 		country: CountryDisplay;
 	}
->): AddressInput => ({
-	...pick(rest, getAllAddressFieldKeys()),
-	country: countryCode || (country?.code as CountryCode),
-});
+>): AddressInput => {
+	const addressData: AddressInput = {
+		...pick(rest, getAllAddressFieldKeys()),
+		country: countryCode || (country?.code as CountryCode),
+	};
+
+	// Add VAT number to metadata if provided (strip __typename if present)
+	if (vatNumber) {
+		addressData.metadata = [{ key: "vat_number", value: vatNumber }];
+	}
+
+	return addressData;
+};
 
 export const getAddressInputDataFromAddress = (
 	address: OptionalAddress | Partial<AddressFragment>,
@@ -67,12 +110,22 @@ export const getAddressInputDataFromAddress = (
 
 	const { country, phone, ...rest } = address;
 
-	return {
+	const addressInput: AddressInput = {
 		...pick(rest, getAllAddressFieldKeys()),
 		country: country?.code as CountryCode,
 		// cause in api phone can be null
 		phone: phone || "",
 	};
+
+	// Preserve metadata including VAT number if it exists (strip __typename)
+	if ((address as any).metadata) {
+		addressInput.metadata = (address as any).metadata.map((item: any) => ({
+			key: item.key,
+			value: item.value,
+		}));
+	}
+
+	return addressInput;
 };
 
 export const getAddressFormDataFromAddress = (address: OptionalAddress): AddressFormData => {
@@ -90,13 +143,19 @@ export const getAddressFormDataFromAddress = (address: OptionalAddress): Address
 		"countryCode"
 	>;
 
-	return pick(
-		{
-			...parsedAddressBase,
-			countryCode: country.code as CountryCode,
-		},
-		getAllAddressFieldKeys(),
-	) as AddressFormData;
+	// Extract VAT number from metadata if it exists
+	const vatNumber = (address as any).metadata?.find((item: any) => item.key === "vat_number")?.value || "";
+
+	return {
+		...pick(
+			{
+				...parsedAddressBase,
+				countryCode: country.code as CountryCode,
+			},
+			getAllAddressFieldKeys(),
+		),
+		vatNumber,
+	} as AddressFormData;
 };
 
 // checks for address related data and id
@@ -141,7 +200,7 @@ export const getAddressValidationRulesVariables = (
 	autoSave
 		? {
 				checkRequiredFields: false,
-		  }
+			}
 		: {};
 
 export const addressFieldsOrder: AddressField[] = [

@@ -14,7 +14,7 @@ export const useSetCheckoutFormValidationState = (scope: CheckoutFormScope) => {
 			setTouched,
 			values,
 		}: Pick<UseFormReturn<TData>, "validateForm" | "setTouched" | "values">) => {
-			const formErrors = validateForm(values);
+			const formErrors = await validateForm(values);
 
 			if (!hasErrors(formErrors)) {
 				setValidationState(scope, "valid");

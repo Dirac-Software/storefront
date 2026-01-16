@@ -24,6 +24,8 @@ export const apiErrorMessages = {
 	checkoutLinesUpdateQuantityQuantityGreaterThanLimitError:
 		"Couldn't update line - buy limit for this item exceeded",
 	checkoutLinesUpdateQuantityInsufficientStockError: "Couldn't update line - insufficient stock in warehouse",
+	checkoutShippingUpdateQuantityInsufficientStockError:
+		"Insufficient stock available for one or more items in your cart",
 	signInEmailInvalidCredentialsError: "Invalid credentials provided to login",
 	signInEmailInactiveError: "The account you're trying to sign in to is inactive",
 	checkoutShippingUpdatePostalCodeInvalidError: "Invalid postal code was provided for shipping address",
@@ -33,4 +35,6 @@ export const apiErrorMessages = {
 	checkoutDeliveryMethodUpdatePromoCodeInvalidError: "Please provide a valid discount code.",
 	checkoutCompleteBillingAddressBillingAddressNotSetError:
 		"Billing address is required to complete the order. Please provide your billing address.",
+	checkoutCompletePaymentError:
+		"Payment failed. You have not been charged. Please check your payment details and try again.",
 };

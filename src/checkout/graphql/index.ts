@@ -441,6 +441,8 @@ export type AddressInput = {
 	streetAddress1?: InputMaybe<Scalars["String"]>;
 	/** Address. */
 	streetAddress2?: InputMaybe<Scalars["String"]>;
+	/** Address public metadata. */
+	metadata?: InputMaybe<Array<MetadataInput>>;
 };
 
 /**
@@ -26371,6 +26373,7 @@ export type AddressFragment = {
 	firstName: string;
 	lastName: string;
 	country: { __typename?: "CountryDisplay"; country: string; code: string };
+	metadata?: Array<{ __typename?: "MetadataItem"; key: string; value: string }> | null;
 };
 
 export type CheckoutQueryVariables = Exact<{
@@ -28750,6 +28753,10 @@ export const AddressFragmentDoc = gql`
 		}
 		firstName
 		lastName
+		metadata {
+			key
+			value
+		}
 	}
 `;
 export const PaymentGatewayFragmentDoc = gql`

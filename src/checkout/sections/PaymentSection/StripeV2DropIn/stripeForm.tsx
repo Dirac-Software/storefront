@@ -198,14 +198,26 @@ export function CheckoutForm() {
 					isLoading ||
 					!stripe ||
 					!elements ||
+					!checkout.email ||
+					updateState.checkoutEmailUpdate === "loading" ||
+					updateState.checkoutEmailUpdate === "error" ||
 					updateState.checkoutBillingUpdate === "loading" ||
+					updateState.checkoutShippingUpdate === "loading" ||
+					updateState.checkoutBillingUpdate === "error" ||
+					updateState.checkoutShippingUpdate === "error" ||
 					!checkout.billingAddress
 				}
 				disabled={
 					isLoading ||
 					!stripe ||
 					!elements ||
+					!checkout.email ||
+					updateState.checkoutEmailUpdate === "loading" ||
+					updateState.checkoutEmailUpdate === "error" ||
 					updateState.checkoutBillingUpdate === "loading" ||
+					updateState.checkoutShippingUpdate === "loading" ||
+					updateState.checkoutBillingUpdate === "error" ||
+					updateState.checkoutShippingUpdate === "error" ||
 					!checkout.billingAddress
 				}
 				id="submit"

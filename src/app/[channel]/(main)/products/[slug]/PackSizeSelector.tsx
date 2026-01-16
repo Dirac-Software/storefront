@@ -39,23 +39,12 @@ export function PackSizeSelector({
 
 	// Fetch pack allocation whenever packSize changes
 	useEffect(() => {
-		console.log("PackSizeSelector: packSize changed to", packSize);
-		console.log("PackSizeSelector: productId =", productId);
-		console.log("PackSizeSelector: channelSlug =", channelSlug);
-
 		if (packSize <= 0) {
-			console.log("PackSizeSelector: packSize is 0 or negative, skipping fetch");
 			setAllocation(null);
 			return;
 		}
 
 		const loadAllocation = async () => {
-			console.log("PackSizeSelector: fetching allocation with params:", {
-				productId,
-				packSize,
-				channelSlug,
-				checkoutId,
-			});
 			setLoading(true);
 			try {
 				const result = await fetchPackAllocation({
@@ -65,7 +54,6 @@ export function PackSizeSelector({
 					checkoutId,
 				});
 
-				console.log("PackSizeSelector: allocation result", result);
 				setAllocation(result ?? null);
 			} catch (error) {
 				console.error("Failed to fetch pack allocation:", error);
@@ -111,6 +99,9 @@ export function PackSizeSelector({
 
 	// Calculate total units
 	const totalUnits = allocation?.allocation.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+	// Check if requested quantity exceeds available stock
+	const exceedsStock = packSize > 0 && totalUnits > 0 && packSize > totalUnits;
 
 	return (
 		<div className="mt-6 space-y-4">
@@ -174,7 +165,9 @@ export function PackSizeSelector({
 							onChange={handleInputChange}
 							min="0"
 							disabled={pending}
-							className="input-dark h-10 w-20 rounded-md text-center text-base"
+							className={`input-dark h-10 w-20 rounded-md text-center text-base ${
+								exceedsStock ? "border-2 border-orange-500 bg-orange-50" : ""
+							}`}
 						/>
 						<button
 							type="button"
@@ -188,11 +181,41 @@ export function PackSizeSelector({
 					</div>
 				</div>
 
+				{/* Stock Exceeded Warning */}
+				{exceedsStock && (
+					<div className="rounded-md border border-orange-500 bg-orange-50 p-3">
+						<div className="flex items-start gap-2">
+							<svg
+								className="mt-0.5 h-5 w-5 flex-shrink-0 text-orange-600"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+								/>
+							</svg>
+							<div className="flex-1 text-sm">
+								<p className="font-semibold text-orange-800">Requested quantity exceeds available stock</p>
+								<p className="mt-1 text-orange-700">
+									You requested {packSize} units, but only {totalUnits} units are available. We&apos;ll add{" "}
+									{totalUnits} units to your cart.
+								</p>
+							</div>
+						</div>
+					</div>
+				)}
+
 				{/* Units Total */}
 				{totalUnits > 0 && (
 					<div className="flex items-center justify-between text-sm">
 						<span className="text-dark-text-secondary">Units total:</span>
-						<span className="font-semibold text-dark-text-primary">{totalUnits}</span>
+						<span className={`font-semibold ${exceedsStock ? "text-orange-600" : "text-dark-text-primary"}`}>
+							{totalUnits}
+						</span>
 					</div>
 				)}
 

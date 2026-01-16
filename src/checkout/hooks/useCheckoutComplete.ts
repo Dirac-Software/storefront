@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useCheckoutCompleteMutation } from "@/checkout/graphql";
 import { useCheckout } from "@/checkout/hooks/useCheckout";
 import { useSubmit } from "@/checkout/hooks/useSubmit";
-import { replaceUrl } from "@/checkout/lib/utils/url";
+import { replaceUrl, clearQueryParams } from "@/checkout/lib/utils/url";
 
 export const useCheckoutComplete = () => {
 	const {
@@ -30,6 +30,18 @@ export const useCheckoutComplete = () => {
 						});
 						window.location.href = newUrl;
 					}
+				},
+				onError: ({ errors }) => {
+					// Clear the processingPayment query param to hide the "Almost done..." screen
+					clearQueryParams("processingPayment");
+
+					// Redirect to error page with reason
+					const errorMessage =
+						errors.length > 0
+							? errors.map((e) => e.message).join(". ")
+							: "An unexpected error occurred during checkout";
+
+					window.location.href = `/checkout-error?reason=${encodeURIComponent(errorMessage)}`;
 				},
 			}),
 			[checkoutComplete, checkoutId],

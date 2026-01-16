@@ -15,7 +15,7 @@ export const Logo = () => {
 					alt="Sports Wholesale"
 					width={1200}
 					height={600}
-					className="h-auto w-96 md:w-[500px] lg:w-[650px]"
+					className="h-auto w-[1000px] md:w-[1300px] lg:w-[1600px]"
 					priority
 				/>
 			</h1>
@@ -29,7 +29,7 @@ export const Logo = () => {
 					alt="Sports Wholesale"
 					width={1200}
 					height={600}
-					className="h-auto w-96 md:w-[500px] lg:w-[650px]"
+					className="h-auto w-[1000px] md:w-[1300px] lg:w-[1600px]"
 				/>
 			</LinkWithChannel>
 		</div>

@@ -8,7 +8,11 @@ import { TextInput } from "@/checkout/components/TextInput";
 import { autocompleteTags, typeTags } from "@/checkout/lib/consts/inputAttributes";
 import { CountrySelect } from "@/checkout/components/CountrySelect";
 import { Select } from "@/checkout/components/Select";
-import { getEmptyAddressFormData, isMatchingAddressFormData } from "@/checkout/components/AddressForm/utils";
+import {
+	getEmptyAddressFormData,
+	isMatchingAddressFormData,
+	EU_COUNTRIES,
+} from "@/checkout/components/AddressForm/utils";
 import { type ChangeHandler, useFormContext, type BlurHandler } from "@/checkout/hooks/useForm";
 import { useAddressFormUtils } from "@/checkout/components/AddressForm/useAddressFormUtils";
 import { usePhoneNumberValidator } from "@/checkout/lib/utils/phoneNumber";
@@ -41,6 +45,8 @@ export const AddressForm: FC<PropsWithChildren<AddressFormProps>> = ({
 	} = useAddressFormUtils(values.countryCode);
 
 	const allowedFieldsRef = useRef(allowedFields);
+
+	const isEUCountry = EU_COUNTRIES.includes(values.countryCode);
 
 	const customValidators: Partial<Record<AddressField, FieldValidator>> = {
 		phone: isValidPhoneNumber,
@@ -113,6 +119,16 @@ export const AddressForm: FC<PropsWithChildren<AddressFormProps>> = ({
 						<TextInput required={isRequired} {...commonProps} key={field} type={typeTags[field] || "text"} />
 					);
 				})}
+				{isEUCountry && (
+					<TextInput
+						key="vatNumber"
+						name="vatNumber"
+						label="VAT Number"
+						required
+						autoComplete="off"
+						{...fieldProps}
+					/>
+				)}
 				{children}
 			</div>
 		</>

@@ -17,6 +17,8 @@ import {
 	type CheckoutUpdateStateScope,
 	useCheckoutUpdateStateChange,
 } from "@/checkout/state/updateStateStore";
+import { useSetCheckoutFormValidationState } from "@/checkout/hooks/useSetCheckoutFormValidationState";
+import { type CheckoutFormScope } from "@/checkout/state/checkoutValidationStateStore";
 
 export type AutoSaveAddressFormData = Partial<AddressFormData>;
 
@@ -30,8 +32,12 @@ export const useAutoSaveAddressForm = ({
 	const { initialValues, onSubmit } = formProps;
 	const { setCountryCode, validationSchema } = useAddressFormSchema(initialValues.countryCode);
 
+	// Map scope to validation scope
+	const validationScope: CheckoutFormScope = scope.includes("Billing") ? "billingAddress" : "shippingAddress";
+	const { setCheckoutFormValidationState } = useSetCheckoutFormValidationState(validationScope);
+
 	const form = useForm<AutoSaveAddressFormData>({ ...formProps, validationSchema });
-	const { values, validateForm, dirty, handleBlur, handleChange } = form;
+	const { values, validateForm, dirty, handleBlur, handleChange, setTouched } = form;
 
 	const debouncedSubmit = useDebouncedSubmit(onSubmit);
 
@@ -55,13 +61,31 @@ export const useAutoSaveAddressForm = ({
 	// request for forever now https://github.com/jaredpalmer/formik/issues/2675
 	// so we're just gonna add a partial submit for guest address form to work
 	const partialSubmit = useCallback(async () => {
-		const formErrors = validateForm(values);
+		const formErrors = await validateForm(values);
 
 		if (!hasErrors(formErrors) && dirty) {
 			setCheckoutUpdateState("loading");
 			void debouncedSubmit({ ...initialValues, countryCode: values.countryCode, ...values }, formHelpers);
+		} else if (hasErrors(formErrors)) {
+			// If validation fails, show errors by marking all error fields as touched
+			await setTouched(Object.keys(formErrors).reduce((result, key) => ({ ...result, [key]: true }), {}));
+			// Mark form validation as invalid to block payment
+			void setCheckoutFormValidationState({ validateForm, setTouched, values });
+			if (dirty) {
+				setCheckoutUpdateState("error");
+			}
 		}
-	}, [validateForm, values, dirty, setCheckoutUpdateState, debouncedSubmit, initialValues, formHelpers]);
+	}, [
+		validateForm,
+		values,
+		dirty,
+		setCheckoutUpdateState,
+		debouncedSubmit,
+		initialValues,
+		formHelpers,
+		setTouched,
+		setCheckoutFormValidationState,
+	]);
 
 	const onChange: ChangeHandler = (event) => {
 		const { name, value } = event.target;

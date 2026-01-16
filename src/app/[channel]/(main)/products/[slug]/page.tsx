@@ -93,7 +93,17 @@ export default async function Page(props: {
 	invariant(product, "Product must exist after notFound check");
 
 	const firstImage = product.thumbnail;
-	const description = product?.description ? parser.parse(JSON.parse(product?.description)) : null;
+	let description = null;
+	if (product?.description) {
+		try {
+			const cleanDescription = product.description.trim();
+			const parsed = JSON.parse(cleanDescription);
+			description = parser.parse(parsed);
+		} catch (error) {
+			console.error("Failed to parse product description:", error);
+			description = null;
+		}
+	}
 
 	const variants = product.variants;
 	const selectedVariantID = searchParams.variant;
@@ -326,14 +336,16 @@ export default async function Page(props: {
 							<p className="mb-4 text-sm text-dark-text-secondary">Product Code: {productCode}</p>
 						)}
 						<p className="mb-6 text-2xl font-bold text-blue-600" data-testid="ProductElement_Price">
-							Trade price: {price}
+							Our Price: {price}
 						</p>
 
 						{/* RRP and Stock Info */}
-						<div className="mb-6 space-y-1 text-sm text-dark-text-secondary">
-							{rrpFormatted && <p>RRP: {rrpFormatted}</p>}
-							{effectiveMinimum > 0 && <p>Minimum order: {effectiveMinimum} units</p>}
-							{totalAvailableQuantity > 0 && <p>In stock: {totalAvailableQuantity} units</p>}
+						<div className="mb-6 space-y-1 text-dark-text-secondary">
+							{rrpFormatted && <p className="text-xl font-bold">RRP: {rrpFormatted}</p>}
+							{effectiveMinimum > 0 && <p className="text-base">Minimum order: {effectiveMinimum} units</p>}
+							{totalAvailableQuantity > 0 && (
+								<p className="text-base">In stock: {totalAvailableQuantity} units</p>
+							)}
 						</div>
 
 						<AvailabilityMessage isAvailable={isAvailable} />

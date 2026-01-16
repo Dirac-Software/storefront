@@ -3,6 +3,7 @@ import { type MightNotExist } from "@/checkout/lib/globalTypes";
 
 export interface AddressFormData extends Omit<Record<AddressField, string>, "country" | "countryCode"> {
 	countryCode: CountryCode;
+	vatNumber?: string;
 }
 
 export type OptionalAddress = MightNotExist<AddressFragment>;

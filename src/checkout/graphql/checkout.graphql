@@ -195,6 +195,10 @@ fragment AddressFragment on Address {
 	}
 	firstName
 	lastName
+	metadata {
+		key
+		value
+	}
 }
 
 query checkout($id: ID!, $languageCode: LanguageCodeEnum!) {

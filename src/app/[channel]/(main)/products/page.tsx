@@ -105,7 +105,7 @@ export default async function Page(props: {
 			<section className="mx-auto max-w-7xl p-8 pb-16">
 				{/* Fallback title if no banner image */}
 				{categorySlug && !category?.backgroundImage && (
-					<h1 className="mb-6 text-3xl font-bold capitalize text-dark-text-primary">
+					<h1 className="mb-6 text-6xl font-bold capitalize text-dark-text-primary">
 						{category?.name || categorySlug.replace(/-/g, " ")}
 					</h1>
 				)}
