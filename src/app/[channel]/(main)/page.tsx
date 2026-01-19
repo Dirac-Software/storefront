@@ -1,7 +1,6 @@
 import Image from "next/image";
-import { ProductListByCollectionDocument, CategoriesListDocument } from "@/gql/graphql";
+import { CollectionsListDocument, CategoriesListDocument } from "@/gql/graphql";
 import { executeGraphQL } from "@/lib/graphql";
-import { ProductList } from "@/ui/components/ProductList";
 import { ProductCarousel } from "@/ui/components/ProductCarousel";
 import { LinkWithChannel } from "@/ui/atoms/LinkWithChannel";
 
@@ -26,27 +25,26 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 		revalidate: 60,
 	});
 
-	// Fetch featured products collection (optional - won't break page if it doesn't exist)
-	const data = await executeGraphQL(ProductListByCollectionDocument, {
+	// Fetch all collections
+	const collectionsData = await executeGraphQL(CollectionsListDocument, {
 		variables: {
-			slug: "featured-products",
 			channel: params.channel,
 		},
 		revalidate: 60,
 	});
 
-	// Fetch best sellers collection products
-	const bestSellersData = await executeGraphQL(ProductListByCollectionDocument, {
-		variables: {
-			slug: "best-sellers",
-			channel: params.channel,
-		},
-		revalidate: 60,
-	});
-
-	const products = data.collection?.products?.edges.map(({ node: product }) => product) || [];
-	const bestSellers = bestSellersData.collection?.products?.edges.map(({ node }) => node) || [];
 	const categories = categoriesData.categories?.edges.map(({ node }) => node) || [];
+
+	// Process collections and filter out unavailable products
+	const collections =
+		collectionsData.collections?.edges.map(({ node }) => ({
+			id: node.id,
+			name: node.name,
+			slug: node.slug,
+			products:
+				node.products?.edges.map(({ node: product }) => product).filter((product) => product.isAvailable) ||
+				[],
+		})) || [];
 
 	return (
 		<>
@@ -83,24 +81,16 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 				</div>
 			</section>
 
-			{/* Best Sellers Carousel Section - Only show if products exist */}
-			{bestSellers.length > 0 && (
-				<section className="mx-auto max-w-7xl p-8 pb-16">
-					<h2 className="mb-8 text-center text-2xl font-bold text-dark-text-primary md:text-3xl">
-						Best Sellers
-					</h2>
-					<ProductCarousel products={bestSellers} />
-				</section>
-			)}
-
-			{/* Featured Products Section - Only show if products exist */}
-			{products.length > 0 && (
-				<section className="mx-auto max-w-7xl p-8 pb-16">
-					<h2 className="mb-8 text-center text-2xl font-bold text-dark-text-primary md:text-3xl">
-						Featured Products
-					</h2>
-					<ProductList products={products} />
-				</section>
+			{/* Collections Sections - Display all collections */}
+			{collections.map((collection) =>
+				collection.products.length > 0 ? (
+					<section key={collection.id} className="mx-auto max-w-7xl p-8 pb-16">
+						<h2 className="mb-8 text-center text-2xl font-bold text-dark-text-primary md:text-3xl">
+							{collection.name}
+						</h2>
+						<ProductCarousel products={collection.products} />
+					</section>
+				) : null,
 			)}
 		</>
 	);

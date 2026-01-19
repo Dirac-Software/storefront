@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import clsx from "clsx";
 import { Money } from "@/checkout/components";
 import { type Money as MoneyType } from "@/checkout/graphql";
 import { getFormattedMoney } from "@/checkout/lib/utils/money";
@@ -12,15 +11,9 @@ interface SummaryItemMoneyInfoProps {
 	quantity: number;
 }
 
-export const SummaryItemMoneyInfo: FC<SummaryItemMoneyInfoProps> = ({
-	unitPrice,
-	quantity,
-	undiscountedUnitPrice,
-	totalPrice,
-}) => {
+export const SummaryItemMoneyInfo: FC<SummaryItemMoneyInfoProps> = ({ unitPrice, quantity, totalPrice }) => {
 	const multiplePieces = quantity > 1;
 	const piecePrice = unitPrice.net || unitPrice.gross;
-	const totalPriceNet = totalPrice.net || totalPrice.gross;
 	const totalPriceGross = totalPrice.gross;
 
 	return (

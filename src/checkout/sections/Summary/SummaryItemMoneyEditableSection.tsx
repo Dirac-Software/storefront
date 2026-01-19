@@ -32,9 +32,9 @@ export const SummaryItemMoneyEditableSection: React.FC<SummaryItemMoneyEditableS
 				</div>
 			) : (
 				<SummaryItemMoneyInfo
-					unitPrice={{ gross: line.unitPrice.gross, net: line.unitPrice.net }}
+					unitPrice={{ gross: line.unitPrice.gross, net: line.unitPrice.gross }}
 					undiscountedUnitPrice={line.undiscountedUnitPrice}
-					totalPrice={{ gross: line.totalPrice.gross, net: line.totalPrice.net }}
+					totalPrice={{ gross: line.totalPrice.gross, net: line.totalPrice.gross }}
 					quantity={line.quantity}
 				/>
 			)}

@@ -335,19 +335,13 @@ export default async function Page(props: {
 						{productCode && (
 							<p className="mb-4 text-sm text-dark-text-secondary">Product Code: {productCode}</p>
 						)}
-
-						{/* RRP */}
-						{rrpFormatted && (
-							<p className="mb-6 text-xl font-bold text-dark-text-secondary">RRP: {rrpFormatted}</p>
-						)}
-
-						{/* Our Price */}
 						<p className="mb-6 text-2xl font-bold text-blue-600" data-testid="ProductElement_Price">
 							Our Price: {price}
 						</p>
 
-						{/* Stock Info */}
+						{/* RRP and Stock Info */}
 						<div className="mb-6 space-y-1 text-dark-text-secondary">
+							{rrpFormatted && <p className="text-xl font-bold">RRP: {rrpFormatted}</p>}
 							{effectiveMinimum > 0 && <p className="text-base">Minimum order: {effectiveMinimum} units</p>}
 							{totalAvailableQuantity > 0 && (
 								<p className="text-base">In stock: {totalAvailableQuantity} units</p>

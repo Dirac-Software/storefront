@@ -2,6 +2,7 @@ fragment ProductListItem on Product {
 	id
 	name
 	slug
+	isAvailable
 	pricing {
 		priceRange {
 			start {
