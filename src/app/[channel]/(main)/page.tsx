@@ -35,15 +35,13 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 
 	const categories = categoriesData.categories?.edges.map(({ node }) => node) || [];
 
-	// Process collections and filter out unavailable products
+	// Process collections (filtering now done at GraphQL level)
 	const collections =
 		collectionsData.collections?.edges.map(({ node }) => ({
 			id: node.id,
 			name: node.name,
 			slug: node.slug,
-			products:
-				node.products?.edges.map(({ node: product }) => product).filter((product) => product.isAvailable) ||
-				[],
+			products: node.products?.edges.map(({ node: product }) => product) || [],
 		})) || [];
 
 	return (

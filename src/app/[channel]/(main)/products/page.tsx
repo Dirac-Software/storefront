@@ -5,6 +5,7 @@ import {
 	OrderDirection,
 	ProductOrderField,
 	CategoryBySlugDocument,
+	StockAvailability,
 } from "@/gql/graphql";
 import { executeGraphQL } from "@/lib/graphql";
 import { Pagination } from "@/ui/components/Pagination";
@@ -75,8 +76,11 @@ export default async function Page(props: {
 			filter: category
 				? {
 						categories: [category.id],
+						stockAvailability: StockAvailability.InStock,
 					}
-				: undefined,
+				: {
+						stockAvailability: StockAvailability.InStock,
+					},
 		},
 		revalidate: 60,
 	});

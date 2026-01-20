@@ -5,7 +5,7 @@ query CollectionsList($channel: String!) {
 				id
 				name
 				slug
-				products(first: 100) {
+				products(first: 100, filter: { stockAvailability: IN_STOCK }) {
 					edges {
 						node {
 							...ProductListItem

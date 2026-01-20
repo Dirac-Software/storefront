@@ -4,7 +4,7 @@ query ProductListByCollection($slug: String!, $channel: String!) {
 		description
 		seoDescription
 		seoTitle
-		products(first: 100) {
+		products(first: 100, filter: { stockAvailability: IN_STOCK }) {
 			edges {
 				node {
 					...ProductListItem

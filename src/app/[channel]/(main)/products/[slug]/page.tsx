@@ -60,14 +60,22 @@ export async function generateMetadata(
 }
 
 export async function generateStaticParams({ params }: { params: { channel: string } }) {
-	const { products } = await executeGraphQL(ProductListDocument, {
-		revalidate: 60,
-		variables: { first: 20, channel: params.channel },
-		withAuth: false,
-	});
+	// Reduce the number of products pre-rendered at build time to avoid API timeouts
+	// Most pages will be generated on-demand which is better for large catalogs
+	try {
+		const { products } = await executeGraphQL(ProductListDocument, {
+			revalidate: 60,
+			variables: { first: 5, channel: params.channel },
+			withAuth: false,
+		});
 
-	const paths = products?.edges.map(({ node: { slug } }) => ({ slug })) || [];
-	return paths;
+		const paths = products?.edges.map(({ node: { slug } }) => ({ slug })) || [];
+		return paths;
+	} catch (error) {
+		console.error("Failed to generate static params for products:", error);
+		// Return empty array to allow build to continue - pages will be generated on-demand
+		return [];
+	}
 }
 
 const parser = edjsHTML();

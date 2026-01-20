@@ -2,7 +2,7 @@ query ProductListByCategory($slug: String!, $channel: String!, $first: Int = 20)
 	category(slug: $slug) {
 		id
 		name
-		products(first: $first, channel: $channel) {
+		products(first: $first, channel: $channel, filter: { stockAvailability: IN_STOCK }) {
 			edges {
 				node {
 					...ProductListItem

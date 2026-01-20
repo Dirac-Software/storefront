@@ -15,7 +15,7 @@ query SearchProducts(
 		before: $before
 		channel: $channel
 		sortBy: { field: $sortBy, direction: $sortDirection }
-		filter: { search: $search }
+		filter: { search: $search, stockAvailability: IN_STOCK }
 	) {
 		totalCount
 		edges {
