@@ -21,12 +21,16 @@ export default function RootLayout(props: { children: ReactNode }) {
 	return (
 		<html lang="en" className="dark min-h-dvh">
 			<body className={`${inter.className} min-h-dvh bg-dark-bg text-dark-text-primary`}>
-				<Script src="https://www.googletagmanager.com/gtag/js?id=G-33RGQ53K7S" strategy="afterInteractive" />
-				<Script id="google-analytics" strategy="afterInteractive">
+				<Script
+					src="https://www.googletagmanager.com/gtag/js?id=AW-17749601602"
+					strategy="afterInteractive"
+				/>
+				<Script id="google-tag" strategy="afterInteractive">
 					{`
 						window.dataLayer = window.dataLayer || [];
 						function gtag(){dataLayer.push(arguments);}
 						gtag('js', new Date());
+						gtag('config', 'AW-17749601602');
 						gtag('config', 'G-33RGQ53K7S');
 					`}
 				</Script>
