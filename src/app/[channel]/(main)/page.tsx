@@ -3,6 +3,9 @@ import { CollectionsListDocument, CategoriesListDocument } from "@/gql/graphql";
 import { executeGraphQL } from "@/lib/graphql";
 import { ProductCarousel } from "@/ui/components/ProductCarousel";
 import { LinkWithChannel } from "@/ui/atoms/LinkWithChannel";
+import { AboutSection } from "@/ui/components/AboutSection";
+import { ContactSection } from "@/ui/components/ContactSection";
+import { FAQSection } from "@/ui/components/FAQSection";
 
 export const metadata = {
 	title: "Sports Wholesale - Wholesale Sports Equipment",
@@ -46,8 +49,18 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 
 	return (
 		<>
+			{/* Hero Section */}
+			<section className="mx-auto max-w-7xl px-8 pt-12 pb-8 text-center">
+				<h1 className="text-2xl font-bold text-dark-text-primary md:text-3xl lg:text-4xl">
+					Wholesale Sportswear, Footwear & Apparel
+				</h1>
+				<p className="mt-4 text-xl text-dark-text-secondary md:text-2xl">
+					Branded wholesale for retailers & online sellers
+				</p>
+			</section>
+
 			{/* Category Banners Section */}
-			<section className="mx-auto max-w-7xl p-8 pt-12">
+			<section className="mx-auto max-w-7xl p-8 pt-0">
 				<h2 className="mb-6 text-center text-2xl font-bold text-dark-text-primary md:text-3xl">
 					Shop by Category
 				</h2>
@@ -82,14 +95,23 @@ export default async function Page(props: { params: Promise<{ channel: string }>
 			{/* Collections Sections - Display all collections */}
 			{collections.map((collection) =>
 				collection.products.length > 0 ? (
-					<section key={collection.id} className="mx-auto max-w-7xl p-8 pb-16">
-						<h2 className="mb-8 text-center text-2xl font-bold text-dark-text-primary md:text-3xl">
+					<section key={collection.id} className="mx-auto max-w-7xl p-8 py-6">
+						<h2 className="mb-6 text-center text-2xl font-bold text-dark-text-primary md:text-3xl">
 							{collection.name}
 						</h2>
 						<ProductCarousel products={collection.products} />
 					</section>
 				) : null,
 			)}
+
+			{/* About Section */}
+			<AboutSection />
+
+			{/* Contact Section */}
+			<ContactSection />
+
+			{/* FAQ Section */}
+			<FAQSection />
 		</>
 	);
 }

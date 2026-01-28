@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import { LinkWithChannel } from "../atoms/LinkWithChannel";
 import { ChannelSelect } from "./ChannelSelect";
@@ -172,6 +171,13 @@ export async function Footer({ channel }: { channel: string }) {
 									WhatsApp Us
 								</a>
 							</li>
+							<li className="pt-2 border-t border-dark-border mt-2">
+								<div className="text-dark-text-muted text-xs uppercase tracking-wide mb-2">Business Hours</div>
+								<div className="space-y-1">
+									<div>Mon-Fri: 9:00 AM - 5:30 PM</div>
+									<div>Sat-Sun: Closed</div>
+								</div>
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -188,25 +194,11 @@ export async function Footer({ channel }: { channel: string }) {
 				<div className="flex flex-col justify-between gap-4 border-t border-dark-border py-8 sm:flex-row sm:items-center">
 					<div className="flex flex-col gap-4">
 						<p className="text-sm text-dark-text-secondary">
-							&copy; {currentYear} Sports Wholesale. All rights reserved.
+							SportsWholesale is operated by Dirac Group Limited. &copy; {currentYear} Dirac Software Limited. All rights reserved.
 						</p>
-						<div className="flex items-center gap-4 text-sm text-dark-text-muted">
-							<span>Powered by</span>
-							<Link
-								target="_blank"
-								href="https://saleor.io/"
-								className="text-dark-text-secondary transition-colors hover:text-dark-text-primary"
-							>
-								Saleor
-							</Link>
-							<Link
-								href="https://github.com/saleor/saleor"
-								target="_blank"
-								className="opacity-50 transition-opacity hover:opacity-100"
-							>
-								<Image alt="Saleor github repository" height={20} width={20} src="/github-mark.svg" />
-							</Link>
-						</div>
+						<p className="text-sm text-dark-text-secondary">
+							VAT GB 424528208. Registered in England and Wales No. 13570843
+						</p>
 					</div>
 					<div className="flex items-center justify-end">
 						<LinkWithChannel href="/">

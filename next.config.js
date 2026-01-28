@@ -25,8 +25,18 @@ const config = {
 			},
 			// Map static pages directly to root (e.g., /about-us instead of /pages/about-us)
 			{
-				source: "/:slug(about-us|contact-us|cookie-policy|privacy-policy|returns-policy|terms-conditions)",
+				source: "/:slug(cookie-policy|privacy-policy|returns-policy|terms-conditions)",
 				destination: `/${channel}/pages/:slug`,
+			},
+			// About us page
+			{
+				source: "/about-us",
+				destination: `/${channel}/about-us`,
+			},
+			// Contact us page with form
+			{
+				source: "/contact-us",
+				destination: `/${channel}/contact-us`,
 			},
 			// Catch-all: map everything else with channel prefix
 			{

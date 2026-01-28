@@ -16,14 +16,14 @@ export const SearchBar = () => {
 			className="group relative my-2 flex w-full items-center justify-items-center text-sm lg:w-80"
 		>
 			<label className="w-full">
-				<span className="sr-only">search for products</span>
+				<span className="sr-only">Search by product or brand</span>
 				<input
 					type="text"
 					name="search"
-					placeholder="Search for products..."
+					placeholder="Search by product or brand"
 					autoComplete="on"
 					required
-					className="input-dark h-10 w-full rounded-md px-4 py-2 pr-10 text-sm"
+					className="input-dark h-10 w-full rounded-md px-4 py-2 pr-10 text-sm placeholder:text-dark-text-secondary"
 				/>
 			</label>
 			<div className="absolute inset-y-0 right-0">

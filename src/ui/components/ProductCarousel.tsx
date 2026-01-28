@@ -61,11 +61,11 @@ export function ProductCarousel({ products }: { products: readonly ProductListIt
 			{/* Products Carousel */}
 			<div
 				ref={scrollRef}
-				className="flex snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden scroll-smooth px-2 pb-4 md:gap-6 md:px-0 [&_li]:list-none"
+				className="grid snap-x snap-mandatory auto-cols-[260px] grid-flow-col grid-rows-2 gap-4 overflow-x-auto overflow-y-hidden scroll-smooth px-2 pb-4 sm:auto-cols-[280px] md:auto-cols-[300px] md:gap-6 md:px-0 [&_li]:list-none"
 				style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
 			>
-				{products.map((product) => (
-					<div key={product.id} className="w-[260px] flex-shrink-0 snap-start sm:w-[280px] md:w-[300px]">
+				{products.map((product, index) => (
+					<div key={product.id} className="snap-start">
 						<ProductElement product={product} priority={false} loading="lazy" />
 					</div>
 				))}
