@@ -71,7 +71,7 @@ export async function Footer({ channel }: { channel: string }) {
 											return (
 												<li key={child.id} className="text-sm">
 													<LinkWithChannel
-														href={`/pages/${child.page.slug}`}
+														href={`/${child.page.slug}`}
 														className="text-dark-text-secondary transition-colors hover:text-dark-text-primary"
 													>
 														{child.page.title}
@@ -105,7 +105,7 @@ export async function Footer({ channel }: { channel: string }) {
 								{pages.pages.edges.map((edge) => (
 									<li key={edge.node.id} className="text-sm">
 										<LinkWithChannel
-											href={`/pages/${edge.node.slug}`}
+											href={`/${edge.node.slug}`}
 											className="text-dark-text-secondary transition-colors hover:text-dark-text-primary"
 										>
 											{edge.node.title}

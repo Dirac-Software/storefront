@@ -2,7 +2,7 @@ import { NavLink } from "./NavLink";
 import { executeGraphQL } from "@/lib/graphql";
 import { CategoriesListDocument } from "@/gql/graphql";
 
-export const NavLinks = async ({ channel: _channel }: { channel: string }) => {
+export const NavLinks = async () => {
 	// Fetch categories directly
 	const categoriesData = await executeGraphQL(CategoriesListDocument, {
 		revalidate: 60 * 60 * 24,
